@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->text('extract');
             $table->longText('body');
-            $table->enum('status', [Post::BORRADOR, Post::PUBLICADO])->default(1);
+            $table->enum('status', [Post::BORRADOR, Post::PUBLICADO])->default(Post::BORRADOR);
 
             $table->foreignId('category_id')
                   ->constrained()
