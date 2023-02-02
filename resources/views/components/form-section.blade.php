@@ -8,9 +8,12 @@
             <div class="px-4 py-5 sm:p-6">
                 {{ $slot }}
             </div>
-            <div class="px-6 py-3 flex justify-end items-center">
-                {{ $actions }}
-            </div>
+
+            @isset($actions)
+                <div class="px-6 py-3 flex justify-end items-center">
+                    {{ $actions }}
+                </div>
+            @endisset
         </div>
     </div>
 </div>
