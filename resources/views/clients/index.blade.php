@@ -39,12 +39,11 @@
     
                 <x-slot name="actions">
                     <x-primary-button v-on:click="store" v-bind:disabled="createForm.disabled">
-                        Crear
+                        Create
                     </x-primary-button>
                 </x-slot>
             </x-form-section>
     
-            {{-- Edit client --}}
             <x-form-section v-if="clients.length > 0">
                 <x-slot name="title">
                     Clients list
@@ -68,8 +67,14 @@
                                     @{{ client.name }}
                                 </td>
                                 <td class="flex py-2 divide-x divide-gray-100 dark:divide-gray-700">
-                                    <a class="pr-2 hover:text-blue-600 font-semibold cursor-pointer"
-                                        v-on:click="edit(client)">Edit</a>
+                                    <a class="pr-2 hover:text-green-600 font-semibold cursor-pointer"
+                                        v-on:click="show(client)">
+                                        View
+                                    </a>
+                                    <a class="px-2 hover:text-blue-600 font-semibold cursor-pointer"
+                                        v-on:click="edit(client)">
+                                        Edit
+                                    </a>
                                     <a class="pl-2 hover:text-red-600 font-semibold cursor-pointer"
                                         v-on:click="destroy(client)">
                                         Delete
@@ -81,7 +86,8 @@
                 </div>
             </x-form-section>
         </x-container>
-    
+
+        {{-- Edit client --}}
         <x-dialog-modal modal="editForm.open">
             <x-slot name="title">
                 Edit client
@@ -109,8 +115,45 @@
             </x-slot>
 
             <x-slot name="footer">
-                <button type="button" class="inline-flex w-full justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-base font-medium text-gray-200 dark:text-gray-200 shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm">Actualizar</button>
-                <button v-on:click="editForm.open = false" type="button" class="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">Cancel</button>
+                <x-primary-button 
+                    v-on:click="update()"
+                    v-bind:disabled="editForm.disabled"
+                    class="sm:ml-3">
+                    Update
+                </x-primary-button>
+                <x-secondary-button v-on:click="editForm.open = false" class="sm:ml-3">
+                    Cancel
+                </x-secondary-button>
+            </x-slot>
+        </x-dialog-modal>
+
+        {{-- Show client --}}
+        <x-dialog-modal modal="showForm.open">
+            <x-slot name="title">
+                Show credentials
+            </x-slot>
+
+            <x-slot name="content">
+                <div class="space-y-2 text-gray-800 dark:text-gray-200">
+                    <p>
+                        <span class="font-semibold">Client:</span>
+                        <span v-text="showForm.name" class="text-sm select-all"></span>
+                    </p>
+                    <p>
+                        <span class="font-semibold">Client ID:</span>
+                        <span v-text="showForm.id" class="text-sm select-all"></span>
+                    </p>
+                    <p>
+                        <span class="font-semibold">Client secret:</span>
+                        <span v-text="showForm.secret" class="text-sm break-words select-all"></span>
+                    </p>
+                </div>
+            </x-slot>
+
+            <x-slot name="footer">
+                <x-secondary-button v-on:click="showForm.open = false" class="sm:ml-3">
+                    Cancel
+                </x-secondary-button>
             </x-slot>
         </x-dialog-modal>
     </div>
@@ -122,6 +165,12 @@
                 el: "#app",
                 data: {
                     clients: [],
+                    showForm: {
+                        open: false,
+                        id: null,
+                        name: null,
+                        secret: null,
+                    },
                     createForm: {
                         disabled: false,
                         errors: [],
@@ -132,6 +181,7 @@
                         open: false,
                         disabled: false,
                         errors: [],
+                        id: null,
                         name: null,
                         redirect: null,
                     }
@@ -141,12 +191,21 @@
                 },
                 methods: {
                     getClients() {
+
                         axios.get('/oauth/clients').then(response => {
                             
                             this.clients = response.data;
                         });
                     },
+                    show(client) {
+
+                        this.showForm.open = true;
+                        this.showForm.id = client.id;
+                        this.showForm.name = client.name;
+                        this.showForm.secret = client.secret;
+                    },
                     store() {
+
                         this.createForm.disabled = true;
                         axios.post('/oauth/clients', this.createForm).then(response => {
                             
@@ -154,11 +213,7 @@
                             this.createForm.redirect = null;
                             this.createForm.errors = [];
 
-                            Swal.fire(
-                                'Created successfully!',
-                                'Your client was successfully created.',
-                                'success'
-                            );
+                            this.show(response.data);
 
                             this.createForm.disabled = false;
                             this.getClients();
@@ -169,9 +224,39 @@
                         });
                     },
                     edit(client) {
+
                         this.editForm.open = true;
+                        this.editForm.errors = [];
+                        this.editForm.id = client.id;
+                        this.editForm.name = client.name;
+                        this.editForm.redirect = client.redirect;
+                    },
+                    update() {
+
+                        this.editForm.disabled = true;
+                        axios.put('/oauth/clients/' + this.editForm.id, this.editForm).then(response => {
+
+                            this.editForm.open = false;
+                            this.editForm.disabled = false;
+                            this.editForm.name = null;
+                            this.editForm.redirect = null;
+                            this.editForm.errors = [];
+
+                            Swal.fire(
+                                'Updated successfully!',
+                                'Your client was successfully Updated.',
+                                'success'
+                            );
+
+                            this.getClients();
+                        }).catch(error => {
+
+                            this.editForm.errors = error.response.data.errors;
+                            this.editForm.disabled = false;
+                        });
                     },
                     destroy(client) {
+
                         Swal.fire({
                             title: 'Are you sure?',
                             text: "You won't be able to revert this!",
