@@ -43,7 +43,8 @@
                     </x-primary-button>
                 </x-slot>
             </x-form-section>
-    
+
+            {{-- Show clients --}}
             <x-form-section v-if="clients.length > 0">
                 <x-slot name="title">
                     Clients list

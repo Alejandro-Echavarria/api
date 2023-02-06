@@ -15,6 +15,14 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+
+                    <x-nav-link :href="route('clients.index')" :active="request()->routeIs('clients.index')">
+                        {{ __('Clients') }}
+                    </x-nav-link>
+
+                    <x-nav-link :href="route('tokens.index')" :active="request()->routeIs('tokens.index')">
+                        {{ __('API tokens') }}
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -34,9 +42,6 @@
                     </x-slot>
 
                     <x-slot name="content">
-                        <x-dropdown-link :href="route('clients.index')">
-                            {{ __('Clients') }}
-                        </x-dropdown-link>
 
                         <x-dropdown-link :href="route('profile.edit')">
                             {{ __('Profile') }}
@@ -73,6 +78,14 @@
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
+            </x-responsive-nav-link>
+
+            <x-responsive-nav-link :href="route('clients.index')" :active="request()->routeIs('clients.index')">
+                {{ __('Clients') }}
+            </x-responsive-nav-link>
+
+            <x-responsive-nav-link :href="route('tokens.index')" :active="request()->routeIs('tokens.index')">
+                {{ __('API tokens') }}
             </x-responsive-nav-link>
         </div>
 
