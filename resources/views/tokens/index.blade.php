@@ -20,13 +20,26 @@
                 </x-slot>
 
                 <div class="grid grid-cols-6 gap-6">
-                    <div class="col-span-6 sm:col-span-4">
-                        <x-input-label>
-                            {{ __('Name') }}
-                        </x-input-label>
-
-                        <x-text-input v-model="createForm.name" type="text" class="w-full mt-1" />
-                        <x-input-error-vue class="mt-2" object="createForm" property="name" />
+                    <div class="col-span-6 sm:col-span-4 space-y-2">
+                        <div>
+                            <x-input-label>
+                                {{ __('Name') }}
+                            </x-input-label>
+    
+                            <x-text-input v-model="createForm.name" type="text" class="w-full mt-1" />
+                            <x-input-error-vue class="mt-2" object="createForm" property="name" />
+                        </div>
+                        <div v-if="scopes.length > 0">
+                            <x-input-label>
+                                {{ __('Scopes') }}
+                            </x-input-label>
+                            <div v-for="scope in scopes">
+                                <x-input-label>
+                                    <input v-model="createForm.scopes" type="checkbox" name="checkbox" id="checkbox" :value="scope.id" class="mt-1">
+                                    @{{ scope.id }}
+                                </x-input-label>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -109,8 +122,10 @@
                 el: '#app',
                 data: {
                     tokens: [],
+                    scopes: [],
                     createForm: {
                         name: null,
+                        scopes: [],
                         errors: [],
                         disabled: false,
                     },
@@ -121,8 +136,16 @@
                 },
                 mounted() {
                     this.getTokens();
+                    this.getScopes();
                 },
                 methods: {
+                    getScopes() {
+
+                        axios.get('/oauth/scopes').then(response => {
+
+                            this.scopes = response.data;
+                        });
+                    },
                     getTokens() {
 
                         axios.get('/oauth/personal-access-tokens').then(response => {
@@ -141,6 +164,7 @@
                         axios.post('/oauth/personal-access-tokens', this.createForm).then(response => {
 
                             this.createForm.name = null;
+                            this.createForm.scopes = [];
                             this.createForm.errors = [];
                             this.createForm.disabled = false;
                             this.getTokens();

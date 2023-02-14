@@ -3,17 +3,17 @@
         <div>
             <div class="px-4 sm:px-0">
                 <h3 class="text-lg font-medium">Authorization Request</h3>
-                <div class="mt-3">
+                <div class="mt-3 space-y-4">
                     <p><strong>{{ $client->name }}</strong> is requesting permission to access your account.</p>
                     <!-- Scope List -->
                     @if (count($scopes) > 0)
                         <div class="scopes">
-                                <p><strong>This application will be able to:</strong></p>
-                                <ul>
-                                    @foreach ($scopes as $scope)
-                                        <li>{{ $scope->description }}</li>
-                                    @endforeach
-                                </ul>
+                            <p><strong>This application will be able to:</strong></p>
+                            <ul class="list-disc list-inside">
+                                @foreach ($scopes as $scope)
+                                    <li>{{ $scope->description }}</li>
+                                @endforeach
+                            </ul>
                         </div>
                     @endif
                 </div>
