@@ -28,8 +28,8 @@ class AuthServiceProvider extends ServiceProvider
 
         Passport::tokensExpireIn(now()->addSecond(60));
         Passport::tokensCan([
-            'create-post' => 'Create a new post',
             'read-post'   => 'Read a post',
+            'create-post' => 'Create a new post',
             'update-post' => 'Update a post',
             'delete-post' => 'Delete a post'
         ]);
