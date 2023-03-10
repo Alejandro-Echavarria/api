@@ -6,14 +6,16 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Post;
 use App\Http\Resources\PostResource;
+use Spatie\Permission\Models\Role;
 
 class PostController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth:api')->except(['index', 'show']);
+
         $this->middleware('scopes:read-post')->only('index', 'show');
-        $this->middleware(['scopes:create-post'])->only(['store']);
+        $this->middleware(['scopes:create-post', 'can:create.posts'])->only(['store']);
         $this->middleware(['scopes:update-post'])->only(['update']);
         $this->middleware(['scopes:delete-post'])->only(['destroy']);
     }

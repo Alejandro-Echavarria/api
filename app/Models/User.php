@@ -35,6 +35,8 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    protected function getDefaultGuardName(): string { return 'web'; }
+
     /**
      * The attributes that should be cast.
      *

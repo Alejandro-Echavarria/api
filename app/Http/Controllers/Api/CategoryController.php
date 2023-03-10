@@ -12,10 +12,6 @@ class CategoryController extends Controller
 {
     public function index()
     {
-        $user = auth()->user();
-        $permissions = User::permission('create.posts')->get();
-        return $permissions;
-
         $categories = Category::included()
             ->filter()
             ->sort()
